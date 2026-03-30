@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopNova – Discover Everything</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav class="navbar">
+  <div class="nav-top">
+
+    <!-- Logo -->
+    <a class="nav-logo" href="#" onclick="showPage('home');return false">
+      Shop<span>Nova</span>
+    </a>
+
+    <!-- Search -->
+    <div class="nav-search">
+      <select class="search-cat" id="searchCat">
+        <option value="all">All</option>
+        <option value="electronics">Electronics</option>
+        <option value="fashion">Fashion</option>
+        <option value="home">Home</option>
+        <option value="sports">Sports</option>
+        <option value="beauty">Beauty</option>
+        <option value="books">Books</option>
+        <option value="toys">Toys</option>
+      </select>
+      <div class="search-wrapper">
+        <input type="text" id="searchInput"
+          placeholder="Search products, brands and more..."
+          autocomplete="off">
+        <div class="suggestions-box" id="suggestionsBox"></div>
+      </div>
+      <button class="search-btn" onclick="doSearch()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" width="18" height="18">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="nav-actions">
+
+      <!-- Theme toggle -->
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
+
+      <!-- Wishlist -->
+      <button class="nav-btn" onclick="showPage('wishlist')">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+        <span class="sub">Wishlist</span>
+      </button>
+
+      <!-- Cart -->
+      <button class="nav-btn" onclick="openCart()" style="position:relative">
+        <span class="cart-badge" id="cartBadge">0</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <span class="sub">Cart</span>
+      </button>
+
+      <!-- User / Account -->
+      <div class="user-dropdown-wrapper">
+        <button class="nav-btn" onclick="toggleUserDropdown()" id="userNavBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          <span class="sub" id="userNavLabel">Sign In</span>
+        </button>
+
+        <div class="user-dropdown" id="userDropdown">
+
+          <!-- Auth panel (shown when logged out) -->
+          <div id="authPanel">
+            <div class="dropdown-auth">
+              <h3 id="authTitle">Welcome back</h3>
+
+              <input type="text"     class="auth-input" id="authName"  placeholder="Full name" style="display:none">
+              <div class="auth-error" id="authNameErr"></div>
+
+              <input type="email"    class="auth-input" id="authEmail" placeholder="Email address">
+              <div class="auth-error" id="authEmailErr"></div>
+
+              <input type="password" class="auth-input" id="authPass"  placeholder="Password">
+              <div class="auth-error" id="authPassErr"></div>
+
+              <button class="auth-btn auth-btn-primary" id="authSubmitBtn" onclick="handleAuth()">
+                Sign In
+              </button>
+              <p class="auth-toggle">
+                Don't have an account?
+                <span id="authToggleLink" onclick="toggleAuthMode()">Sign Up</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Profile panel (shown when logged in) -->
+          <div id="profilePanel" style="display:none">
+            <div class="dropdown-header">
+              <h3 id="profileName">Hello!</h3>
+              <p  id="profileEmail"></p>
+            </div>
+            <div class="dropdown-body">
+              <div class="dropdown-item" onclick="showPage('wishlist');closeUserDropdown()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" width="16" height="16">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                My Wishlist
+              </div>
+              <div class="dropdown-item" onclick="openCart();closeUserDropdown()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" width="16" height="16">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                My Cart
+              </div>
+              <div class="dropdown-divider"></div>
+              <div class="dropdown-item danger" onclick="logout()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" width="16" height="16">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Sign Out
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /user-dropdown -->
+      </div><!-- /user-dropdown-wrapper -->
+
+    </div><!-- /nav-actions -->
+  </div><!-- /nav-top -->
+
+  <!-- Sub-navigation -->
+  <div class="nav-sub">
+    <a href="#" class="active" onclick="filterCat('all');return false">Today's Deals</a>
+    <a href="#" onclick="filterCat('electronics');return false">Electronics</a>
+    <a href="#" onclick="filterCat('fashion');return false">Fashion</a>
+    <a href="#" onclick="filterCat('home');return false">Home & Kitchen</a>
+    <a href="#" onclick="filterCat('sports');return false">Sports</a>
+    <a href="#" onclick="filterCat('beauty');return false">Beauty</a>
+    <a href="#" onclick="filterCat('books');return false">Books</a>
+    <a href="#" onclick="filterCat('toys');return false">Toys</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     TOAST CONTAINER
+============================================================ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+     CART SLIDE-IN PANEL
+============================================================ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCartOnOverlay(event)">
+  <div class="cart-panel">
+    <div class="cart-head">
+      <h2>🛒 Your Cart</h2>
+      <button class="cart-close" onclick="closeCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer" id="cartFooter" style="display:none">
+      <div class="cart-subtotal">
+        <span class="label">Subtotal</span>
+        <span class="value" id="cartTotal">$0.00</span>
+      </div>
+      <div class="cart-savings" id="cartSavings"></div>
+      <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout →</button>
+      <button class="continue-btn" onclick="closeCart()">Continue Shopping</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     QUICK VIEW MODAL
+============================================================ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="quickViewModal">
+    <div class="modal-header">
+      <h2>Quick View</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Product image -->
+      <div class="modal-img" id="modalImg"></div>
+      <!-- Product info -->
+      <div class="modal-info">
+        <div class="modal-cat"   id="modalCat"></div>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-price-row">
+          <span class="modal-price" id="modalPrice"></span>
+          <span class="modal-orig"  id="modalOrig"></span>
+        </div>
+        <div class="card-stars" style="margin-bottom:12px">
+          <span class="stars-display" id="modalStars"></span>
+          <span class="rating-count"  id="modalRatCount"></span>
+        </div>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-features" id="modalFeatures"></div>
+        <!-- Quantity selector -->
+        <div class="modal-qty">
+          <span class="qty-label">Qty:</span>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeModalQty(-1)">−</button>
+            <span   class="qty-val" id="modalQty">1</span>
+            <button class="qty-btn" onclick="changeModalQty(1)">+</button>
+          </div>
+        </div>
+        <!-- Actions -->
+        <div class="modal-actions">
+          <button class="modal-add-btn"  onclick="addModalToCart()">Add to Cart</button>
+          <button class="modal-wish-btn" id="modalWishBtn" onclick="toggleModalWish()">♡</button>
+        </div>
+        <!-- Rate this product -->
+        <div class="rate-product">
+          <div class="rate-label">Rate this product:</div>
+          <div class="stars-rate" id="starsRate">
+            <span class="star-btn" data-val="1" onclick="rateProduct(1)">★</span>
+            <span class="star-btn" data-val="2" onclick="rateProduct(2)">★</span>
+            <span class="star-btn" data-val="3" onclick="rateProduct(3)">★</span>
+            <span class="star-btn" data-val="4" onclick="rateProduct(4)">★</span>
+            <span class="star-btn" data-val="5" onclick="rateProduct(5)">★</span>
+          </div>
+        </div>
+      </div><!-- /modal-info -->
+    </div><!-- /modal-body -->
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+<!-- ============================================================
+     HOME PAGE
+============================================================ -->
+<div id="home-page" class="page active">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="badge">✦ Flash Deals Live Now</div>
+        <h1>Discover <em>Everything</em><br>You Love</h1>
+        <p>Millions of products. Unbeatable prices. Fast delivery to your doorstep — every single day.</p>
+        <div class="hero-ctas">
+          <button class="btn-hero-primary"
+            onclick="document.querySelector('.product-grid').scrollIntoView({behavior:'smooth'})">
+            Shop Now →
+          </button>
+          <button class="btn-hero-secondary" onclick="filterCat('electronics')">
+            Explore Deals
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">50M+</div><div class="lbl">Products</div></div>
+          <div class="hero-stat"><div class="num">12M+</div><div class="lbl">Customers</div></div>
+          <div class="hero-stat"><div class="num">99%</div><div class="lbl">Satisfaction</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-cards">
+          <div class="hero-card">
+            <div class="hc-img">🎧</div>
+            <div class="hc-name">Pro Headphones</div>
+            <div class="hc-price">$79.99</div>
+            <div class="hc-stars">★★★★★</div>
+          </div>
+          <div class="hero-card">
+            <div class="hc-img">👟</div>
+            <div class="hc-name">Sport Sneakers</div>
+            <div class="hc-price">$129.00</div>
+            <div class="hc-stars">★★★★☆</div>
+          </div>
+          <div class="hero-card">
+            <div class="hc-img">⌚</div>
+            <div class="hc-name">Smart Watch</div>
+            <div class="hc-price">$199.99</div>
+            <div class="hc-stars">★★★★★</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORY PILLS -->
+  <div class="categories-bar">
+    <div class="cats-inner" id="catPills">
+      <button class="cat-pill active" data-cat="all"         onclick="filterCat('all')">🏠 All</button>
+      <button class="cat-pill"        data-cat="electronics" onclick="filterCat('electronics')">📱 Electronics</button>
+      <button class="cat-pill"        data-cat="fashion"     onclick="filterCat('fashion')">👗 Fashion</button>
+      <button class="cat-pill"        data-cat="home"        onclick="filterCat('home')">🏡 Home & Kitchen</button>
+      <button class="cat-pill"        data-cat="sports"      onclick="filterCat('sports')">⚽ Sports</button>
+      <button class="cat-pill"        data-cat="beauty"      onclick="filterCat('beauty')">💄 Beauty</button>
+      <button class="cat-pill"        data-cat="books"       onclick="filterCat('books')">📚 Books</button>
+      <button class="cat-pill"        data-cat="toys"        onclick="filterCat('toys')">🎮 Toys</button>
+    </div>
+  </div>
+
+  <!-- FEATURED PRODUCTS -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" id="productsTitle">Featured Products</h2>
+      <span id="productCount" style="font-size:0.85rem;color:var(--text3)"></span>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+
+  <!-- FLASH SALE BANNER -->
+  <div class="deals-banner">
+    <div class="deals-inner">
+      <div class="deals-text">
+        <h2>⚡ Flash Sale Ends In:</h2>
+        <p>Grab the best deals before time runs out!</p>
+      </div>
+      <div class="deal-timer">
+        <div class="timer-block">
+          <div class="timer-num" id="timerH">08</div>
+          <div class="timer-lbl">Hours</div>
+        </div>
+        <div class="timer-block">
+          <div class="timer-num" id="timerM">34</div>
+          <div class="timer-lbl">Mins</div>
+        </div>
+        <div class="timer-block">
+          <div class="timer-num" id="timerS">22</div>
+          <div class="timer-lbl">Secs</div>
+        </div>
+      </div>
+      <button class="btn-hero-primary" onclick="filterCat('all')">View All Deals</button>
+    </div>
+  </div>
+
+  <!-- TRENDING SECTION -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Trending Now 🔥</h2>
+      <a class="section-link" href="#" onclick="filterCat('all');return false">See all →</a>
+    </div>
+    <div class="product-grid" id="trendingGrid"></div>
+  </div>
+
+</div><!-- /#home-page -->
+
+<!-- ============================================================
+     WISHLIST PAGE
+============================================================ -->
+<div id="wishlist-page" class="page" style="max-width:1400px;margin:40px auto;padding:0 24px">
+  <div class="section-header" style="margin-bottom:28px">
+    <h2 class="section-title">♡ My Wishlist</h2>
+    <button style="font-size:0.85rem;color:var(--accent);font-weight:600;cursor:pointer;background:none;border:none"
+      onclick="showPage('home')">← Back to shopping</button>
+  </div>
+  <div class="product-grid" id="wishlistGrid"></div>
+</div>
+
+<!-- ============================================================
+     CHECKOUT PAGE
+============================================================ -->
+<div id="checkout-page" class="page checkout-page">
+
+  <!-- Step indicators -->
+  <div class="checkout-steps">
+    <div class="step-item active" id="step1Item">
+      <div class="step-num">1</div><span>Delivery</span>
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="step2Item">
+      <div class="step-num">2</div><span>Payment</span>
+    </div>
+    <div class="step-sep"></div>
+    <div class="step-item" id="step3Item">
+      <div class="step-num">3</div><span>Review</span>
+    </div>
+  </div>
+
+  <div class="checkout-grid">
+
+    <!-- LEFT: form steps -->
+    <div>
+
+      <!-- STEP 1: Delivery address -->
+      <div id="deliveryStep">
+        <div class="form-section-title">📦 Delivery Address</div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text"  class="form-input" id="delivName"  placeholder="Jane Doe">
+          <div class="auth-error" id="delivNameErr"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="delivEmail" placeholder="you@example.com">
+          <div class="auth-error" id="delivEmailErr"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone (optional)</label>
+          <input type="tel"   class="form-input" id="delivPhone" placeholder="+1 (555) 000-0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address Line 1</label>
+          <input type="text"  class="form-input" id="delivAddr1" placeholder="123 Main Street">
+          <div class="auth-error" id="delivAddr1Err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address Line 2 (Optional)</label>
+          <input type="text"  class="form-input" id="delivAddr2" placeholder="Apt, Suite, Floor…">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" class="form-input" id="delivCity" placeholder="New York">
+            <div class="auth-error" id="delivCityErr"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ZIP / Postal Code</label>
+            <input type="text" class="form-input" id="delivZip" placeholder="10001">
+            <div class="auth-error" id="delivZipErr"></div>
+          </div>
+        </div>
+        <button class="checkout-btn" onclick="goToPayment()">Continue to Payment →</button>
+      </div><!-- /#deliveryStep -->
+
+      <!-- STEP 2: Payment -->
+      <div id="paymentStep" style="display:none">
+        <div class="form-section-title">💳 Payment Method</div>
+
+        <div class="payment-options">
+          <label class="payment-option selected" onclick="selectPayment(this)">
+            <input type="radio" name="payment" value="card" checked>
+            <div class="payment-option-label">
+              <span class="name">Credit / Debit Card</span>
+              <span class="sub">Visa, Mastercard, Amex</span>
+            </div>
+            <span class="payment-icon">💳</span>
+          </label>
+          <label class="payment-option" onclick="selectPayment(this)">
+            <input type="radio" name="payment" value="paypal">
+            <div class="payment-option-label">
+              <span class="name">PayPal</span>
+              <span class="sub">Fast & secure checkout</span>
+            </div>
+            <span class="payment-icon">🅿️</span>
+          </label>
+          <label class="payment-option" onclick="selectPayment(this)">
+            <input type="radio" name="payment" value="applepay">
+            <div class="payment-option-label">
+              <span class="name">Apple Pay</span>
+              <span class="sub">Touch ID / Face ID</span>
+            </div>
+            <span class="payment-icon">🍎</span>
+          </label>
+          <label class="payment-option" onclick="selectPayment(this)">
+            <input type="radio" name="payment" value="cod">
+            <div class="payment-option-label">
+              <span class="name">Cash on Delivery</span>
+              <span class="sub">Pay when you receive</span>
+            </div>
+            <span class="payment-icon">💵</span>
+          </label>
+        </div>
+
+        <!-- Card fields (shown only when card selected) -->
+        <div id="cardFields">
+          <div class="form-group">
+            <label class="form-label">Card Number</label>
+            <input type="text" class="form-input" id="cardNum"
+              placeholder="1234 5678 9012 3456" maxlength="19"
+              oninput="formatCardNum(this)">
+            <div class="auth-error" id="cardNumErr"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Expiry</label>
+              <input type="text" class="form-input" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+            </div>
+            <div class="form-group">
+              <label class="form-label">CVV</label>
+              <input type="text" class="form-input" id="cardCvv" placeholder="123" maxlength="4">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Name on Card</label>
+            <input type="text" class="form-input" id="cardName" placeholder="Jane Doe">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button class="continue-btn" style="flex:0 0 auto;padding:12px 20px;width:auto"
+            onclick="backToDelivery()">← Back</button>
+          <button class="checkout-btn" onclick="goToReview()">Review Order →</button>
+        </div>
+      </div><!-- /#paymentStep -->
+
+      <!-- STEP 3: Review -->
+      <div id="reviewStep" style="display:none">
+        <div class="form-section-title">✅ Review & Place Order</div>
+        <div id="reviewDetails"
+          style="background:var(--bg2);border-radius:var(--radius);padding:16px;margin-bottom:16px;font-size:0.88rem;line-height:1.8;color:var(--text2)">
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="continue-btn" style="flex:0 0 auto;padding:12px 20px;width:auto"
+            onclick="backToPayment()">← Back</button>
+          <button class="place-order-btn" onclick="placeOrder()">Place Order 🎉</button>
+        </div>
+      </div><!-- /#reviewStep -->
+
+    </div><!-- /left column -->
+
+    <!-- RIGHT: order summary -->
+    <div class="order-summary-card">
+      <div class="os-title">Order Summary</div>
+      <div class="os-items" id="orderSummaryItems"></div>
+      <div class="os-divider"></div>
+      <div class="os-row"><span>Subtotal</span>     <span id="osSub"></span></div>
+      <div class="os-row"><span>Shipping</span>     <span style="color:var(--green)">FREE</span></div>
+      <div class="os-row"><span>Tax (8%)</span>     <span id="osTax"></span></div>
+      <div class="os-divider"></div>
+      <div class="os-row total"><span>Total</span>  <span id="osTotal"></span></div>
+    </div>
+
+  </div><!-- /checkout-grid -->
+</div><!-- /#checkout-page -->
+
+<!-- ============================================================
+     ORDER SUCCESS PAGE
+============================================================ -->
+<div id="success-page" class="page">
+  <div class="order-success">
+    <span class="success-icon">🎉</span>
+    <h2 class="success-title">Order Placed!</h2>
+    <p class="success-sub">
+      Thank you for shopping with ShopNova! Your order has been confirmed
+      and will be delivered within 3–5 business days.
+    </p>
+    <div class="success-order-id" id="successOrderId"></div>
+    <button class="btn-hero-primary"
+      onclick="showPage('home');clearCart()"
+      style="margin:0 auto;display:inline-flex">
+      Continue Shopping →
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">Shop<span>Nova</span></div>
+      <p class="footer-desc">
+        Your one-stop destination for millions of products at unbeatable prices.
+        Fast shipping, easy returns, world-class customer service.
+      </p>
+      <div class="footer-socials">
+        <div class="footer-social">𝕏</div>
+        <div class="footer-social">f</div>
+        <div class="footer-social">in</div>
+        <div class="footer-social">📷</div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#" onclick="filterCat('electronics');return false">Electronics</a></li>
+        <li><a href="#" onclick="filterCat('fashion');return false">Fashion</a></li>
+        <li><a href="#" onclick="filterCat('home');return false">Home & Kitchen</a></li>
+        <li><a href="#" onclick="filterCat('sports');return false">Sports</a></li>
+        <li><a href="#" onclick="filterCat('beauty');return false">Beauty</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Returns &amp; Refunds</a></li>
+        <li><a href="#">Shipping Info</a></li>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 ShopNova. All rights reserved.</span>
+    <span>🔒 SSL Secured &nbsp;·&nbsp; 💳 Safe Payments &nbsp;·&nbsp; 🚚 Fast Delivery</span>
+  </div>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS  (order matters: data → app state → features)
+============================================================ -->
+<script src="data/products.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/products.js"></script>
+<script src="js/checkout.js"></script>
+
+</body>
+</html>
